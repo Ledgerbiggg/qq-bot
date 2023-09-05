@@ -1,9 +1,9 @@
-package com.ledger.entity.resp;
+package com.ledger.entity.resp.common;
 
 import lombok.Data;
 
 @Data
 public class Res {
     private int code;
-    private String session;
+    private String msg;
 }

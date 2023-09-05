@@ -4,11 +4,12 @@ import com.ledger.utils.res.ResUtils;
 import lombok.Data;
 
 @Data
-public class SessionInfo {
-    private String url="/sessionInfo";
+public class FetchMessage {
+    private String url="/fetchMessage";
     private String sessionKey;
+    private int count=10;
 
-    public SessionInfo() {
+    public FetchMessage() {
         this.sessionKey= ResUtils.config.getSessionKey();
     }
 }

@@ -3,8 +3,10 @@ package com.ledger.utils.res;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSON;
-import com.ledger.entity.resp.Res;
-import lombok.Data;
+import com.ledger.config.Config;
+import com.ledger.entity.resp.common.ResDataArr;
+import com.ledger.entity.resp.common.ResDataObj;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,18 +18,22 @@ import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.StringJoiner;
 
+@Slf4j
 public class ResUtils {
+
+    public static Config config;
 
     static RestTemplate restTemplate;
 
-    static Config config;
-
     static String url;
 
-    static {
-        SetUp();
-    }
 
+    public static <T> ResDataObj postData(T type) {
+        return postData(type, ResDataObj.class);
+    }
+    public static <T> ResDataArr getData(T type) {
+        return getData(type, ResDataArr.class);
+    }
 
     public static <T, K> K getData(T type, Class<K> resClazz) {
 
@@ -39,17 +45,20 @@ public class ResUtils {
                 sj.add(k + "=" + v);
             }
         });
-        ResponseEntity<K> res = restTemplate.getForEntity(url + getUrl(type) + sj, resClazz);
+        ResponseEntity<String> res = restTemplate.getForEntity(url + getUrl(type) + sj, String.class);
+
+        String body = res.getBody();
+
+        JSON.toJSONString(body);
+
+        K k = JSON.parseObject(res.getBody(), resClazz);
 
         //TODO 消息不正确就发送给我
         HttpStatus statusCode = res.getStatusCode();
 
-        return res.getBody();
+        return k;
     }
 
-    public static <T> Res postData(T type) {
-        return postData(type, Res.class);
-    }
 
     public static <T, K> K postData(T type, Class<K> resClazz) {
 
@@ -64,15 +73,16 @@ public class ResUtils {
     }
 
 
-    private static void SetUp() {
+    public static Config SetUp() {
         restTemplate = new RestTemplate();
         File file = new File("./Config.json");
         String c = FileUtil.readString(file, Charset.defaultCharset());
-        config = JSON.parseObject(c, Config.class);
+        Config config = JSON.parseObject(c, Config.class);
         String addr = config.getAddr();
         int port = config.getPort();
         String http = config.getHttp();
         url = http + addr + ":" + port;
+        return config;
     }
 
 
@@ -86,15 +96,6 @@ public class ResUtils {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Data
-    private static class Config {
-        private String http = "http://";
-        private String addr;
-        private int port;
-        private long qq;
-
     }
 
 
