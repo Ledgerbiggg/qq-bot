@@ -11,5 +11,7 @@ public class Config {
     private String addr;
     private int port;
     private long qq;
+    private long ownerQq;
+    private long group;
 
 }
