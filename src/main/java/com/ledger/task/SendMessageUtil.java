@@ -44,8 +44,7 @@ public class SendMessageUtil {
         }
         array.add(jsonObject);
         sendFriendMessage.setMessageChain(array);
-        return ResUtils.postData(sendMessage, ResMessage.class);
+        return ResUtils.postData(sendFriendMessage, ResMessage.class);
     }
-
 
 }

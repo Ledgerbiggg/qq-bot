@@ -7,9 +7,7 @@ import com.ledger.config.Config;
 import com.ledger.entity.resp.common.ResDataArr;
 import com.ledger.entity.resp.common.ResDataObj;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
@@ -62,7 +60,10 @@ public class ResUtils {
 
     public static <T, K> K postData(T type, Class<K> resClazz) {
 
-        HttpEntity<String> requestEntity = new HttpEntity<>(JSON.toJSONString(type), null);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Accept-Charset", "UTF-8");
+        HttpEntity<String> requestEntity = new HttpEntity<>(JSON.toJSONString(type), headers);
 
         ResponseEntity<K> res = restTemplate.postForEntity(url + getUrl(type), requestEntity, resClazz);
 
@@ -71,6 +72,30 @@ public class ResUtils {
 
         return res.getBody();
     }
+
+
+    public static <T, K> K postDataForCommon(String url,T type, Class<K> resClazz){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Accept-Charset", "UTF-8");
+        HttpEntity<String> requestEntity = new HttpEntity<>(JSON.toJSONString(type), headers);
+        ResponseEntity<K> res = restTemplate.postForEntity(url, requestEntity, resClazz);
+//        String body = res.getBody();
+//        K k = JSON.parseObject(body, resClazz);
+        //TODO 消息不正确就发送给我
+        HttpStatus statusCode = res.getStatusCode();
+
+        return res.getBody();
+    }
+
+    public static <K> K getDataForCommon(String url, Class<K> resClazz){
+        ResponseEntity<K> res = restTemplate.getForEntity(url, resClazz);
+        //TODO 消息不正确就发送给我
+        HttpStatus statusCode = res.getStatusCode();
+        return res.getBody();
+    }
+
+
 
 
     public static Config SetUp() {

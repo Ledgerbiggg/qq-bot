@@ -2,6 +2,7 @@ package com.ledger.utils;
 
 import com.ledger.entity.res.Bind;
 import com.ledger.entity.res.Verify;
+import com.ledger.entity.resp.WeatherResponse;
 import com.ledger.entity.resp.common.Res;
 import com.ledger.entity.resp.common.ResSession;
 import com.ledger.utils.res.ResUtils;
@@ -28,5 +29,13 @@ class ResUtilsTest {
     @Test
     void get() {
 //        ResUtils.getData();
+    }
+
+    @Test
+    void name() {
+
+
+
+
     }
 }
