@@ -31,6 +31,8 @@ public class GetMessageUtil {
             String type = (String) item.get("type");
             if (type.equals("Plain")) {
                 log.info("消息是--文本--格式,消息文本是===={}", item.get("text"));
+                ResMessage resMessage = SendMessageUtil.SendMessages(item.get("text"), true, true);
+                log.info(resMessage.getMsg());
             } else if (type.equals("Image")) {
                 log.info("消息是--图片--格式,图片地址是===={}", item.get("url"));
                 ResMessage resMessage = SendMessageUtil.SendMessages(item.get("url"), true, true);

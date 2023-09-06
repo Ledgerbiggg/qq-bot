@@ -7,5 +7,5 @@ import lombok.Data;
 public class ResMessage {
     private int code;
     private String msg;
-    private JSONObject data;
+    private int messageId;
 }

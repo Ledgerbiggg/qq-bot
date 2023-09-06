@@ -26,15 +26,11 @@ public class SendMessageUtil {
         } else {
             resMessage= send(content, isText, new SendGroupMessage());
         }
-
         return resMessage;
     }
-
     private static ResMessage send(Object content, boolean isText, SendMessage sendMessage) {
-        SendFriendMessage sendFriendMessage = new SendFriendMessage();
         JSONArray array = new JSONArray();
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("type", "Plain");
         if (isText) {
             jsonObject.put("type", TypeEnum.PLAIN.getType());
             jsonObject.put(TypeEnum.PLAIN.getContentType(), content);
@@ -43,8 +39,19 @@ public class SendMessageUtil {
             jsonObject.put(TypeEnum.IMAGE.getContentType(), content);
         }
         array.add(jsonObject);
-        sendFriendMessage.setMessageChain(array);
-        return ResUtils.postData(sendMessage, ResMessage.class);
+        if(sendMessage instanceof SendFriendMessage){
+            SendFriendMessage sendFriendMessage = new SendFriendMessage();
+            sendFriendMessage.setMessageChain(array);
+            return ResUtils.postData(sendFriendMessage, ResMessage.class);
+        }else if (sendMessage instanceof SendGroupMessage){
+            SendGroupMessage sendGroupMessage = new SendGroupMessage();
+            sendGroupMessage.setMessageChain(array);
+            return ResUtils.postData(sendGroupMessage, ResMessage.class);
+        }
+        ResMessage resMessage = new ResMessage();
+        resMessage.setCode(1);
+        resMessage.setMessageId(-1);
+        return resMessage;
     }
 
 
