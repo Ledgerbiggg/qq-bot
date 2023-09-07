@@ -52,7 +52,7 @@ public class ResUtils {
 
         K k = JSON.parseObject(res.getBody(), resClazz);
 
-        //TODO 消息不正确就发送给我
+        // 消息不正确就发送给我
         HttpStatus statusCode = res.getStatusCode();
         if(!statusCode.equals(HttpStatus.OK)){
             SendMessageUtil.SendMessages(res.getBody(),true,true);
@@ -62,12 +62,15 @@ public class ResUtils {
 
 
     public static <T, K> K postData(T type, Class<K> resClazz) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Accept-Charset", "UTF-8");
 
-        HttpEntity<String> requestEntity = new HttpEntity<>(JSON.toJSONString(type), null);
+        HttpEntity<String> requestEntity = new HttpEntity<>(JSON.toJSONString(type), headers);
 
         ResponseEntity<K> res = restTemplate.postForEntity(url + getUrl(type), requestEntity, resClazz);
 
-        //TODO 消息不正确就发送给我
+        // 消息不正确就发送给我
         HttpStatus statusCode = res.getStatusCode();
 
         if(!statusCode.equals(HttpStatus.OK)){
@@ -82,18 +85,21 @@ public class ResUtils {
         headers.set("Accept-Charset", "UTF-8");
         HttpEntity<String> requestEntity = new HttpEntity<>(JSON.toJSONString(type), headers);
         ResponseEntity<K> res = restTemplate.postForEntity(url, requestEntity, resClazz);
-//        String body = res.getBody();
-//        K k = JSON.parseObject(body, resClazz);
-        //TODO 消息不正确就发送给我
+        // 消息不正确就发送给我
         HttpStatus statusCode = res.getStatusCode();
-
+        if(!statusCode.equals(HttpStatus.OK)){
+            SendMessageUtil.SendMessages(res.getBody(),true,true);
+        }
         return res.getBody();
     }
 
     public static <K> K getDataForCommon(String url, Class<K> resClazz){
         ResponseEntity<K> res = restTemplate.getForEntity(url, resClazz);
-        //TODO 消息不正确就发送给我
+        // 消息不正确就发送给我
         HttpStatus statusCode = res.getStatusCode();
+        if(!statusCode.equals(HttpStatus.OK)){
+            SendMessageUtil.SendMessages(res.getBody(),true,true);
+        }
         return res.getBody();
     }
 

@@ -42,6 +42,7 @@ public class QqBotApplication {
             log.info("账号绑定成功,qq账号是{}", config.getQq());
             log.info("账号信息:qq用户名称{},qq签名:{}", nickname, remark);
             log.info("======================================");
+            // TODO 天气设置成每天早上播报
             WeatherResponse weatherResponse = ResUtils.postDataForCommon("http://apis.juhe.cn/simpleWeather/query?city=宁波&key=251518e073ef6c3c9504dd286c3f6a86", null, WeatherResponse.class);
 
             log.info(weatherResponse.toString());

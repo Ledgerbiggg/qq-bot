@@ -3,6 +3,7 @@ package com.ledger.task;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ledger.entity.res.FetchMessage;
+import com.ledger.entity.resp.NowWeatherResponse;
 import com.ledger.entity.resp.common.ResDataArr;
 import com.ledger.entity.resp.common.ResMessage;
 import com.ledger.utils.res.ResUtils;
@@ -57,9 +58,12 @@ public class GetMessageUtil {
                 log.error(e.getMessage());
                 SendMessageUtil.SendMessages("输入的城市有误或者接口失效",true,true);
             }
-
-
         }
+        // TODO 两个新闻
+        // TODO 一个热搜
+        // TODO 一个微博热搜
+
+
     }
 
     private static List<String> getWeatherContent(NowWeatherResponse nowWeatherResponse) {

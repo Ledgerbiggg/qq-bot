@@ -27,6 +27,8 @@ public class SendMessageUtil {
         }
         return resMessage;
     }
+    // TODO 使用换行的JsonArray去做
+    // TODO 表情包看着用
     private static ResMessage send(Object content, boolean isText, SendMessage sendMessage) {
         JSONArray array = new JSONArray();
         JSONObject jsonObject = new JSONObject();
