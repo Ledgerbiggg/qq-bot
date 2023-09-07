@@ -10,7 +10,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class SendGroupMessage extends SendMessage {
     private String url="/sendGroupMessage";
-
     public SendGroupMessage() {
         super();
     }

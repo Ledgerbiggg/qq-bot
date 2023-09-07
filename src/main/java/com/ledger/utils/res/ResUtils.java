@@ -2,6 +2,7 @@ package com.ledger.utils.res;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.ledger.config.Config;
 import com.ledger.entity.resp.common.ResDataArr;
@@ -55,7 +56,7 @@ public class ResUtils {
         // 消息不正确就发送给我
         HttpStatus statusCode = res.getStatusCode();
         if(!statusCode.equals(HttpStatus.OK)){
-            SendMessageUtil.SendMessages(res.getBody(),true,true);
+            SendMessageUtil.SendMessages(res.getBody(),true);
         }
         return k;
     }
@@ -65,8 +66,7 @@ public class ResUtils {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Accept-Charset", "UTF-8");
-
-        HttpEntity<String> requestEntity = new HttpEntity<>(JSON.toJSONString(type), headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>(JSONUtil.toJsonStr(type), headers);
 
         ResponseEntity<K> res = restTemplate.postForEntity(url + getUrl(type), requestEntity, resClazz);
 
@@ -74,7 +74,7 @@ public class ResUtils {
         HttpStatus statusCode = res.getStatusCode();
 
         if(!statusCode.equals(HttpStatus.OK)){
-            SendMessageUtil.SendMessages(res.getBody(),true,true);
+            SendMessageUtil.SendMessages((String) res.getBody(),true);
         }
         return res.getBody();
     }
@@ -83,12 +83,12 @@ public class ResUtils {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Accept-Charset", "UTF-8");
-        HttpEntity<String> requestEntity = new HttpEntity<>(JSON.toJSONString(type), headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>(JSONUtil.toJsonStr(type), headers);
         ResponseEntity<K> res = restTemplate.postForEntity(url, requestEntity, resClazz);
         // 消息不正确就发送给我
         HttpStatus statusCode = res.getStatusCode();
         if(!statusCode.equals(HttpStatus.OK)){
-            SendMessageUtil.SendMessages(res.getBody(),true,true);
+            SendMessageUtil.SendMessages((String)res.getBody(),true);
         }
         return res.getBody();
     }
@@ -98,7 +98,7 @@ public class ResUtils {
         // 消息不正确就发送给我
         HttpStatus statusCode = res.getStatusCode();
         if(!statusCode.equals(HttpStatus.OK)){
-            SendMessageUtil.SendMessages(res.getBody(),true,true);
+            SendMessageUtil.SendMessages((String) res.getBody(),true);
         }
         return res.getBody();
     }

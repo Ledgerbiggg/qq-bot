@@ -12,41 +12,40 @@ import com.ledger.utils.res.ResUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Component
 @Slf4j
 public class SendMessageUtil {
 
 
-    public static ResMessage SendMessages(Object content, boolean isText, boolean isToFriend) {
+    public static ResMessage SendMessages(String content , boolean isToFriend) {
+        ArrayList<SendMessage.MessageChain> messageChains = new ArrayList<>();
+        SendMessage.MessageChain messageChain = new SendMessage.MessageChain(TypeEnum.PLAIN.getType(),content,true);
+        messageChains.add(messageChain);
+        return SendMessages(messageChains, isToFriend);
+    }
+    public static ResMessage SendMessages(List<SendMessage.MessageChain> messageChains, boolean isToFriend) {
         ResMessage resMessage = null;
         if (isToFriend) {
-            resMessage= send(content, isText, new SendFriendMessage());
+            resMessage= send(messageChains, new SendFriendMessage());
         } else {
-            resMessage= send(content, isText, new SendGroupMessage());
+            resMessage= send(messageChains, new SendGroupMessage());
         }
         return resMessage;
     }
     // TODO 使用换行的JsonArray去做
     // TODO 表情包看着用
-    private static ResMessage send(Object content, boolean isText, SendMessage sendMessage) {
-        JSONArray array = new JSONArray();
-        JSONObject jsonObject = new JSONObject();
-        if (isText) {
-            jsonObject.put("type", TypeEnum.PLAIN.getType());
-            jsonObject.put(TypeEnum.PLAIN.getContentType(), content);
-        } else {
-            jsonObject.put("type", TypeEnum.IMAGE.getType());
-            jsonObject.put(TypeEnum.IMAGE.getContentType(), content);
-        }
-        array.add(jsonObject);
+    private static ResMessage send(List<SendMessage.MessageChain> messageChains, SendMessage sendMessage) {
         if(sendMessage instanceof SendFriendMessage){
             SendFriendMessage sendFriendMessage = new SendFriendMessage();
-            sendFriendMessage.setMessageChain(array);
+            sendFriendMessage.setMessageChain(messageChains);
             return ResUtils.postData(sendFriendMessage, ResMessage.class);
         }else if (sendMessage instanceof SendGroupMessage){
             SendGroupMessage sendGroupMessage = new SendGroupMessage();
-            sendGroupMessage.setMessageChain(array);
+            sendGroupMessage.setMessageChain(messageChains);
             return ResUtils.postData(sendGroupMessage, ResMessage.class);
         }
         ResMessage resMessage = new ResMessage();
