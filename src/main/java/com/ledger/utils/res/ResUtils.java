@@ -4,7 +4,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSON;
 import com.ledger.config.Config;
-import com.ledger.entity.res.intserfaces.SendMessage;
 import com.ledger.entity.resp.common.ResDataArr;
 import com.ledger.entity.resp.common.ResDataObj;
 import com.ledger.task.SendMessageUtil;
@@ -15,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.StringJoiner;
 
@@ -42,11 +40,10 @@ public class ResUtils {
 
         StringJoiner sj = new StringJoiner("&", "?", "");
         map.forEach((k, v) -> {
-            if (!"url".equals(k)) {
+            if (!k.equals("url")) {
                 sj.add(k + "=" + v);
             }
         });
-
         ResponseEntity<String> res = restTemplate.getForEntity(url + getUrl(type) + sj, String.class);
 
         String body = res.getBody();
@@ -55,7 +52,7 @@ public class ResUtils {
 
         K k = JSON.parseObject(res.getBody(), resClazz);
 
-        // 消息不正确就发送给我
+        //TODO 消息不正确就发送给我
         HttpStatus statusCode = res.getStatusCode();
         if(!statusCode.equals(HttpStatus.OK)){
             SendMessageUtil.SendMessages(res.getBody(),true,true);
@@ -63,25 +60,42 @@ public class ResUtils {
         return k;
     }
 
+
     public static <T, K> K postData(T type, Class<K> resClazz) {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
-
-        HttpEntity<String> requestEntity = new HttpEntity<>(JSON.toJSONString(type), headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>(JSON.toJSONString(type), null);
 
         ResponseEntity<K> res = restTemplate.postForEntity(url + getUrl(type), requestEntity, resClazz);
 
-        // 消息不正确就发送给我
+        //TODO 消息不正确就发送给我
         HttpStatus statusCode = res.getStatusCode();
 
         if(!statusCode.equals(HttpStatus.OK)){
             SendMessageUtil.SendMessages(res.getBody(),true,true);
         }
+        return res.getBody();
+    }
+
+    public static <T, K> K postDataForCommon(String url,T type, Class<K> resClazz){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Accept-Charset", "UTF-8");
+        HttpEntity<String> requestEntity = new HttpEntity<>(JSON.toJSONString(type), headers);
+        ResponseEntity<K> res = restTemplate.postForEntity(url, requestEntity, resClazz);
+//        String body = res.getBody();
+//        K k = JSON.parseObject(body, resClazz);
+        //TODO 消息不正确就发送给我
+        HttpStatus statusCode = res.getStatusCode();
 
         return res.getBody();
     }
 
+    public static <K> K getDataForCommon(String url, Class<K> resClazz){
+        ResponseEntity<K> res = restTemplate.getForEntity(url, resClazz);
+        //TODO 消息不正确就发送给我
+        HttpStatus statusCode = res.getStatusCode();
+        return res.getBody();
+    }
 
     public static Config SetUp() {
         restTemplate = new RestTemplate();
