@@ -13,11 +13,13 @@ import com.ledger.entity.resp.common.Res;
 import com.ledger.entity.resp.common.ResDataObj;
 import com.ledger.entity.resp.common.ResSession;
 import com.ledger.utils.res.ResUtils;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+@EqualsAndHashCode
 @SpringBootApplication
 @Slf4j
 @EnableScheduling

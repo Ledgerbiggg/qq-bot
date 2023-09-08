@@ -6,6 +6,7 @@ import com.ledger.entity.res.FetchMessage;
 import com.ledger.entity.res.intserfaces.SendMessage;
 import com.ledger.entity.resp.NewsTopResponse;
 import com.ledger.entity.resp.NowWeatherResponse;
+import com.ledger.entity.resp.VbHotWordsResponse;
 import com.ledger.entity.resp.common.ResDataArr;
 import com.ledger.entity.resp.common.ResMessage;
 import com.ledger.enums.TypeEnum;
@@ -14,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,6 +53,7 @@ public class GetMessageUtil {
 
     /**
      * 针对不同的指令消息去回应不同的消息
+     *
      * @param text 接受的消息文本
      */
     private static void switchTextMessage(String text) {
@@ -66,21 +70,54 @@ public class GetMessageUtil {
                 log.error(e.getMessage());
                 SendMessageUtil.SendMessages("输入的城市有误或者接口失效", true);
             }
-        }else if(text.startsWith("/n")){
+        } else if (text.startsWith("/n")) {
             // TODO 两个新闻
             try {
                 NewsTopResponse newsTopResponse = ResUtils.getDataForCommon
                         ("http://v.juhe.cn/toutiao/index?type=top&key=d268884b9b07c0eb9d6093dc54116018", NewsTopResponse.class);
                 List<SendMessage.MessageChain> newsTopContent = getNewsContent(newsTopResponse);
                 SendMessageUtil.SendMessages(newsTopContent, true);
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.error(e.getMessage());
                 SendMessageUtil.SendMessages("接口失效或者出现其他异常", true);
             }
-        }else if(text.startsWith("/vb")){
+        } else if (text.startsWith("/vb ")) {
             // TODO 一个微博热搜
-
+            String count = text.replaceAll("/vb ", "");
+            try {
+                VbHotWordsResponse vbHotWordsResponse = ResUtils.getDataForCommon
+                        ("https://v2.alapi.cn/api/new/wbtop?token=LwExDtUWhF3rH5ib&num=" + count, VbHotWordsResponse.class);
+                List<SendMessage.MessageChain> newsTopContent = getVbHotWordsContent(vbHotWordsResponse);
+                SendMessageUtil.SendMessages(newsTopContent, true);
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                SendMessageUtil.SendMessages("接口失效或者出现其他异常", true);
+            }
         }
+    }
+    //TODO 链接显示问题
+    private static List<SendMessage.MessageChain> getVbHotWordsContent(VbHotWordsResponse vbHotWordsResponse) {
+        List<VbHotWordsResponse.HotWord> data = vbHotWordsResponse.getData();
+        ArrayList<SendMessage.MessageChain> messageChains = new ArrayList<>();
+        data.forEach(i -> {
+            String hot_word = i.getHot_word();
+            long hot_word_num = i.getHot_word_num();
+            String url = i.getUrl();
+            String encodedText = null;
+            String[] split = url.split("q=");
+            String s = split[1];
+            try {
+                encodedText = URLEncoder.encode(s, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            SendMessage.MessageChain messageChain = new SendMessage.MessageChain(TypeEnum.PLAIN.getType(), hot_word + "\n", true);
+            SendMessage.MessageChain messageChain1 = new SendMessage.MessageChain(TypeEnum.PLAIN.getType(), split[0] + "q=" + encodedText + "\n", true);
+            messageChains.add(messageChain);
+            messageChains.add(messageChain1);
+        });
+
+        return messageChains;
     }
 
     private static List<SendMessage.MessageChain> getNewsContent(NewsTopResponse newsTopResponse) {
@@ -92,12 +129,12 @@ public class GetMessageUtil {
             String url = i.getUrl();
             String date = i.getDate();
             String thumbnailPicS = i.getThumbnail_pic_s();
-            SendMessage.MessageChain messageChain = new SendMessage.MessageChain(TypeEnum.PLAIN.getType(), title+"\n", true);
+            SendMessage.MessageChain messageChain = new SendMessage.MessageChain(TypeEnum.PLAIN.getType(), title + "\n", true);
             SendMessage.MessageChain messageChain1 = new SendMessage.MessageChain(TypeEnum.PLAIN.getType(), "新闻链接:\n", true);
             SendMessage.MessageChain messageChain2 = new SendMessage.MessageChain(TypeEnum.PLAIN.getType(), url, true);
             SendMessage.MessageChain messageChain3 = new SendMessage.MessageChain(TypeEnum.IMAGE.getType(), thumbnailPicS, false);
-            SendMessage.MessageChain messageChain4 = new SendMessage.MessageChain(TypeEnum.PLAIN.getType(), date+"\n", true);
-            Collections.addAll(messageChains, messageChain, messageChain1, messageChain2, messageChain3,messageChain4);
+            SendMessage.MessageChain messageChain4 = new SendMessage.MessageChain(TypeEnum.PLAIN.getType(), date + "\n", true);
+            Collections.addAll(messageChains, messageChain, messageChain1, messageChain2, messageChain3, messageChain4);
             messageChains.add(messageChain);
         });
         return messageChains;

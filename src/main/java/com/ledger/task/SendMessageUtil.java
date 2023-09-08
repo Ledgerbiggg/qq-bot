@@ -36,7 +36,6 @@ public class SendMessageUtil {
         }
         return resMessage;
     }
-    // TODO 使用换行的JsonArray去做
     // TODO 表情包看着用
     private static ResMessage send(List<SendMessage.MessageChain> messageChains, SendMessage sendMessage) {
         if(sendMessage instanceof SendFriendMessage){
