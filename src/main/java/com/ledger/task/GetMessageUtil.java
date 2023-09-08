@@ -90,6 +90,7 @@ public class GetMessageUtil {
                 List<SendMessage.MessageChain> newsTopContent = getVbHotWordsContent(vbHotWordsResponse);
                 SendMessageUtil.SendMessages(newsTopContent, true);
             } catch (Exception e) {
+                // TODO 抛出错误写一下,避免返回状态是200但是实际请求是错误的
                 log.error(e.getMessage());
                 SendMessageUtil.SendMessages("接口失效或者出现其他异常", true);
             }
