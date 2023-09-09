@@ -92,6 +92,21 @@ public class ResUtils {
         }
         return res.getBody();
     }
+    public static <T, K> K postDataForChat(String url,T type, Class<K> resClazz){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Content-Type", "application/json");
+        headers.set("Accept", "application/json");
+        headers.set("Authorization", "Bearer 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");
+        HttpEntity<String> requestEntity = new HttpEntity<>(JSONUtil.toJsonStr(type), headers);
+        ResponseEntity<K> res = restTemplate.postForEntity("https://api.openai.com/v1"+url, requestEntity, resClazz);
+        // 消息不正确就发送给我
+        HttpStatus statusCode = res.getStatusCode();
+        if(!statusCode.equals(HttpStatus.OK)){
+            SendMessageUtil.SendMessages((String)res.getBody(),true);
+        }
+        return res.getBody();
+    }
 
     public static <K> K getDataForCommon(String url, Class<K> resClazz){
         ResponseEntity<K> res = restTemplate.getForEntity(url, resClazz);

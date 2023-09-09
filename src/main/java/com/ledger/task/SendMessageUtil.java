@@ -23,7 +23,7 @@ public class SendMessageUtil {
 
     public static ResMessage SendMessages(String content , boolean isToFriend) {
         ArrayList<SendMessage.MessageChain> messageChains = new ArrayList<>();
-        SendMessage.MessageChain messageChain = new SendMessage.MessageChain(TypeEnum.PLAIN.getType(),content,true);
+        SendMessage.MessageChain messageChain = new SendMessage.MessageChain(TypeEnum.PLAIN.getType(),content);
         messageChains.add(messageChain);
         return SendMessages(messageChains, isToFriend);
     }

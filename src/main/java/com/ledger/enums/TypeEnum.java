@@ -1,9 +1,13 @@
 package com.ledger.enums;
 
 
+import lombok.Getter;
+
+@Getter
 public enum TypeEnum {
     PLAIN("Plain", "text"),
-    IMAGE("Image", "url");
+    IMAGE("Image", "url"),
+    FACE("Face", "faceId");
 
     private final String type;
     private final String contentType;
@@ -11,14 +15,6 @@ public enum TypeEnum {
     TypeEnum(String type, String contentType) {
         this.type = type;
         this.contentType = contentType;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getContentType() {
-        return contentType;
     }
 
 }

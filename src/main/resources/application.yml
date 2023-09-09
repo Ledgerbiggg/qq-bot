@@ -1,2 +1,23 @@
 server:
   port: 9999
+
+spring:
+  application:
+    name: bot
+
+  redis:
+    host: 106.54.9.19
+    port: 6379
+    password: biaoge666
+    database: 2
+
+
+
+
+
+
+
+
+
+
+

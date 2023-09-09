@@ -1,5 +1,6 @@
 package com.ledger.entity.res.intserfaces;
 
+import com.ledger.enums.TypeEnum;
 import com.ledger.utils.res.ResUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,13 +18,16 @@ public abstract class SendMessage {
         private String type;
         private String text;
         private String url;
+        private String faceId;
 
-        public MessageChain(String type, String content, boolean isText) {
+        public MessageChain(String type, String content) {
             this.type = type;
-            if (isText) {
+            if (TypeEnum.PLAIN.getType().equals(type)) {
                 this.text = content;
-            } else {
+            } else if (TypeEnum.IMAGE.getType().equals(type)){
                 this.url = content;
+            } else if (TypeEnum.FACE.getType().equals(type)){
+                this.faceId = content;
             }
         }
     }

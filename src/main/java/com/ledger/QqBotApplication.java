@@ -27,6 +27,7 @@ public class QqBotApplication {
 
 
     public static void main(String[] args) {
+
         Config config = ResUtils.SetUp();
         ResUtils.config = config;
         Res bind = bind(config);
