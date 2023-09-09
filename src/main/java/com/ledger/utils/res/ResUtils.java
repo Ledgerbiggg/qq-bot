@@ -97,7 +97,7 @@ public class ResUtils {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Content-Type", "application/json");
         headers.set("Accept", "application/json");
-        headers.set("Authorization", "Bearer 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");
+        headers.set("Authorization", "Bearer sk-");
         HttpEntity<String> requestEntity = new HttpEntity<>(JSONUtil.toJsonStr(type), headers);
         ResponseEntity<K> res = restTemplate.postForEntity("https://api.openai.com/v1"+url, requestEntity, resClazz);
         // 消息不正确就发送给我
